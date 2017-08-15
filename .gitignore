@@ -17,6 +17,9 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
+vendor
+.idea
+
 # Windows shortcuts
 *.lnk
 ### VisualStudioCode template
