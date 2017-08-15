@@ -1,0 +1,18 @@
+{
+  "test" : {
+    "path": "/lol",
+    "controller": "Default",
+    "method": "GET",
+    "action": "foo"
+  },
+  "check": {
+    "path": "/articles/:id/:test",
+    "controller": "Default",
+    "action": "test"
+  },
+  "home": {
+    "path": "/",
+    "controller": "Default",
+    "action": "chick"
+  }
+}
