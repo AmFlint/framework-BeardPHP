@@ -17,10 +17,10 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Structure de la table `cluster`
+-- Structure de la table `clusters`
 --
 
-CREATE TABLE `cluster` (
+CREATE TABLE `clusters` (
   `id` int(11) NOT NULL,
   `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `birthday` date NOT NULL
@@ -46,9 +46,9 @@ CREATE TABLE `users` (
 --
 
 --
--- Index pour la table `cluster`
+-- Index pour la table `clusters`
 --
-ALTER TABLE `cluster`
+ALTER TABLE `clusters`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -63,9 +63,9 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT pour la table `cluster`
+-- AUTO_INCREMENT pour la table `clusters`
 --
-ALTER TABLE `cluster`
+ALTER TABLE `clusters`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT pour la table `users`
