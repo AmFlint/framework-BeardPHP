@@ -11,6 +11,8 @@ define("DB_PWD", "root");
 // Defining PDO parameter to connect to mysql DB
 define("DBN", "mysql:dbname=".DB_NAME.";host=".DB_HOST);
 
+define('ROOT_URL', 'http://localhost:8888/');
+
 define('APP_ROOT_DIR', __DIR__);
 
 define("APP_CORE_DIR", APP_ROOT_DIR . "/core");
