@@ -2,6 +2,7 @@
 
 namespace Helper;
 
+use PDO;
 
 final class QueryBuilder
 {
@@ -58,10 +59,11 @@ final class QueryBuilder
      * @param $table
      * Assigns DB table to the builder object
      */
-    public function __construct()
+    public function __construct($tableName)
     {
         $this->db = DB::get();
         $this->resetQuery();
+        $this->setTable($tableName);
     }
 
     /**
@@ -318,11 +320,12 @@ final class QueryBuilder
     public function getFirst()
     {
         $this->condition = "";
-        $this->limit = "LIMIT 1";
+        $this->limit = " LIMIT 1";
         $this->setQuery();
         $this->stmt = $this->db->prepare($this->query);
+        $this->bind();
         $row = $this->resultSet();
-        return $row;
+        return current($row);
     }
 
 
@@ -385,7 +388,9 @@ final class QueryBuilder
             $this->limit = " LIMIT 1";
         }
         $this->setQuery($crud);
-        var_dump($this->query);
+        $export['query'] = $this->query;
+        $export['values'] = $this->values;
+        var_dump($export);
         die();
     }
 }
