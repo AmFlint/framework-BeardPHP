@@ -121,23 +121,7 @@ abstract class Model
     {
         $method = 'get' . ucfirst($name);
         if (method_exists($this, $method)) {
-            $relationship = $this->$name = $this->$method();
-            if (isset($relationship['model']))
-            {
-                $model = $relationship['model'];
-            }
-            else
-            {
-                $model = self::getEntityNameFromTable($relationship['builder']->table);
-            }
-            $data = $relationship['builder']->getArray();
-
-            if (count($data) === 1)
-            {
-                return ModelHandler::generateEntity(current($data), $model);
-            }
-
-            return new Collection($data, $model);
+            return $relationship = $this->$name = $this->$method();
         }
     }
 
@@ -149,23 +133,15 @@ abstract class Model
      */
     public function hasOne($model, $joint)
     {
-        $builder = $this->setRelationship($model, $joint);
+        $data = $this->setRelationship($model, $joint)->getOne();
 
-        return [
-            'builder'  => $builder,
-            'model' => $model
-        ];
         $model = ModelHandler::generateEntity(current($data), $model);
         return $model;
     }
 
     public function hasMany($model, $joint)
     {
-        $builder = $this->setRelationship($model, $joint);
-        return [
-            'builder'  => $builder,
-            'model' => $model
-        ];
+        return $this->setRelationship($model, $joint)->get($model);
     }
 
     protected function setRelationship($model, $joint)
@@ -240,36 +216,5 @@ abstract class Model
         }
 
         return $qb;
-    }
-
-    public static function __callStatic($method, $arguments)
-    {
-        if (strpos($method, 'with') === false)
-        {
-            die('no with');
-        }
-        $relation = 'get' . substr($method, strpos($method, "with") + 4);
-
-        $modelCalled = 'Model\\' . self::className();
-
-        if (!class_exists($modelCalled) || !method_exists($modelCalled, $relation))
-        {
-            die('relation inexistant');
-        }
-
-        $model = new $modelCalled();
-        $relationship = $model->$relation();
-        $relationship['builder']->resetCondition();
-        $relationship['model'] = 'Model\\' .$relationship['model'];
-
-        if (!class_exists($relationship['model']))
-        {
-            die('model inexistant');
-        }
-
-        $test = new $relationship['model']();
-        var_dump(array_keys($test->getAttributes()));
-        die();
-        return $model;
     }
 }
