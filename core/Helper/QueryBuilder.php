@@ -437,4 +437,13 @@ class QueryBuilder
         var_dump($export);
         die();
     }
+
+    /**
+     * Set a custom hand-written SQL query.
+     * @param string $query - Containing SQL Query
+     */
+    public function sqlCommand($query)
+    {
+        $this->query = $query;
+    }
 }
