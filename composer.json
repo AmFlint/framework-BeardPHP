@@ -17,7 +17,11 @@
       "Controller\\": "Controller/",
       "Helper\\": "core/Helper/",
       "routing\\": "core/routing/",
-      "Model\\": "Model/"
-    }
+      "Model\\": "Model/",
+      "helpers\\": "helpers/"
+    },
+    "files": [
+      "config.php"
+    ]
   }
 }
