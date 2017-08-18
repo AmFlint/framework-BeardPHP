@@ -2,11 +2,11 @@
 
 namespace Helper;
 
+use helpers\Random;
 use PDO;
 
-final class QueryBuilder
+class QueryBuilder
 {
-
     /**
      * @var
      */
@@ -40,7 +40,7 @@ final class QueryBuilder
     /**
      * @var
      */
-    private $stmt;
+    protected $stmt;
     /**
      * @var
      */
@@ -83,7 +83,7 @@ final class QueryBuilder
      */
     public function select(array $param, array $alias = array())
     {
-        $this->parameters .= $param[0];
+        $this->parameters = $param[0];
         if (isset($alias[0]) && trim($alias[0]) != '') {
             $this->parameters .= ' AS ' . $alias[0];
         }
@@ -102,24 +102,58 @@ final class QueryBuilder
         return $this;
     }
 
-    /**
-     * @param $param
-     * @param $value
-     * @param string $operation
-     * @return $this
-     */
-    public function where($param, $value, $operator = " AND ", $operation = "=")
+    public function where($condition, $operator = '=')
     {
-        if (empty($this->condition)){
-            $this->condition = " WHERE 1";
+        $this->condition = ' WHERE ';
+        return $this->manageCondition($condition, $operator);
+    }
+
+    public function andWhere($condition, $operator = '=')
+    {
+        $this->condition .= ' AND ';
+        return $this->manageCondition($condition, $operator);
+    }
+
+    public function orWhere($condition, $operator = '=')
+    {
+        $this->condition .= ' OR ';
+        return $this->manageCondition($condition, $operator);
+    }
+
+    public function resetCondition()
+    {
+        $this->condition = '';
+        $this->values = $this->array_parameters = [];
+        return $this;
+    }
+
+    protected function manageCondition($condition, $operator)
+    {
+        $queryParam = key($condition);
+        if (is_array(current($condition)))
+        {
+            $values = current($condition);
+            $operator = 'IN';
+            $to_bind = " ('{$values[0]}'";
+            for ($i = 1; $i < count($values); $i++)
+            {
+                $to_bind .= ", '{$values[$i]}'";
+            }
+            $to_bind .= ')';
         }
-        $to_bind = implode('', explode('.', $param));
-        if (in_array($to_bind, $this->array_parameters)) {
-            $to_bind .= 'secret';
+        else
+        {
+            $queryValue = current($condition);
+            $to_bind = implode('', explode('.', $queryParam));
+            if (in_array($to_bind, $this->array_parameters))
+            {
+                $to_bind .= Random::generateRandomString(5);
+            }
+            array_push($this->values, $queryValue);
+            array_push($this->array_parameters, $to_bind);
+            $operator .= ' :';
         }
-        $this->condition .= $operator . $param . ''. ' ' . $operation . ' ' . ':' . $to_bind;
-        array_push($this->values, $value);
-        array_push($this->array_parameters, $to_bind);
+        $this->condition .= "{$queryParam} {$operator}{$to_bind}";
         return $this;
     }
 
@@ -236,7 +270,7 @@ final class QueryBuilder
     /**
      * @param string $crud
      */
-    private function setQuery($crud = "select")
+    protected function setQuery($crud = "select")
     {
         if ($crud == "select") {
             $this->query = 'SELECT ' . $this->parameters .' FROM ' . $this->table . $this->joint . $this->condition .  $this->order . $this->limit . $this->offset;
@@ -252,7 +286,7 @@ final class QueryBuilder
     /**
      *
      */
-    private function resetQuery()
+    protected function resetQuery()
     {
         $this->parameters = $this->columns = $this->query = $this->condition = $this->joint = $this->stmt = $this->limit = $this->offset = '';
         $this->values = $this->array_parameters = array();
@@ -261,7 +295,7 @@ final class QueryBuilder
     /**
      *
      */
-    private function bind()
+    protected function bind()
     {
         $count = count($this->values);
         for ($i = 0; $i < $count; $i++) {
@@ -278,7 +312,7 @@ final class QueryBuilder
     /**
      * @return mixed
      */
-    private function resultSet()
+    protected function resultSet()
     {
         $this->stmt->execute();
         $row = $this->stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -325,9 +359,18 @@ final class QueryBuilder
         $this->stmt = $this->db->prepare($this->query);
         $this->bind();
         $row = $this->resultSet();
-        return current($row);
+        return $row;
     }
 
+    public function getOne()
+    {
+        $this->limit = ' LIMIT 1';
+        $this->setQuery();
+        $this->stmt = $this->db->prepare($this->query);
+        $this->bind();
+        $row = $this->resultSet();
+        return $row;
+    }
 
     /**
      * @return mixed
@@ -390,6 +433,7 @@ final class QueryBuilder
         $this->setQuery($crud);
         $export['query'] = $this->query;
         $export['values'] = $this->values;
+        $export['parameters'] = $this->array_parameters;
         var_dump($export);
         die();
     }
