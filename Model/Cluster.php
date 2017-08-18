@@ -11,9 +11,9 @@ class Cluster extends Model
     public $name;
     public $birthday;
 
-    public function getUser()
+    public function getUsers()
     {
-        return $this->hasOne('User', ['id', 'cluster_id']);
+        return $this->hasMany('User', ['id' => 'cluster_id']);
     }
 
 }
