@@ -6,7 +6,7 @@ abstract class Model
 {
     public static $tableName = null;
     protected static $qb = null;
-    protected static $mainKey = 'id';
+    protected static $primaryKey = 'id';
 
     /**
      * Model constructor.
@@ -179,7 +179,7 @@ abstract class Model
      */
     public static function findOne($parameter)
     {
-        $key = self::$mainKey;
+        $key = self::$primaryKey;
         $value = $parameter;
 
         if (is_array($parameter)) {
@@ -212,9 +212,99 @@ abstract class Model
         }
         else if ($parameter)
         {
-            $qb->where(self::$mainKey, $parameter);
+            $qb->where(self::$primaryKey, $parameter);
         }
 
         return $qb;
+    }
+
+    /**
+     * Method to create an instance of the model class called an persist it
+     * in the DataBase
+     * @param array $attributes - Attributes name => values to assign to the model to create
+     * @return bool|Model - returns an instance of the Model class called if persisted, else false
+     */
+    public static function create($attributes)
+    {
+        $model = 'Model\\' . self::className();
+        $entity = new $model($attributes);
+        if ($entity->save())
+        {
+            return $entity;
+        }
+        return false;
+    }
+
+    /**
+     * Update current Model instance according to given properties/values.
+     * @param array $attributes - Attributes name => values for properties to update
+     * @return boolean - true if entity is successfully persisted else false
+     */
+    public function update($attributes)
+    {
+        $this->hydrate($attributes);
+        if ($this->save())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method to persist current instance to database
+     * Create a new row if new object, else update single row
+     * @return boolean - true if entity is successfully persisted, else false
+     */
+    public function save()
+    {
+        $this->users;
+        $attributes = $this->getAttributes();
+//        unset($attributes[self::$primaryKey]);
+        $qb = $this->getQueryBuilder();
+        $parameters = [];
+        foreach ($attributes as $attribute => $value)
+        {
+            if (!is_object($value))
+            {
+                $parameters[$attribute] = $value;
+            }
+        }
+
+        $qb->values(array_values($parameters));
+        // If current model is not registered in database
+        if (empty($parameters[self::$primaryKey]))
+        {
+            $qb->addColumns(array_keys($parameters))->add();
+        }
+        else
+        {
+            $qb
+                ->updateColumns(array_keys($parameters))
+                ->where([self::$primaryKey => $parameters[self::$primaryKey]])
+                ->update();
+        }
+
+        return true;
+    }
+
+    /**
+     * Method to delete current entity from database based on its primary key value
+     * @return bool - true if entity has been successfully deleted from database, false if encountered a problem
+     */
+    public function delete()
+    {
+        $attributes = $this->getAttributes();
+        // if current entity has not been persisted in the database
+        if (empty($attributes[self::$primaryKey]))
+        {
+            return false;
+        }
+        $this->getQueryBuilder()
+            ->where([
+                self::$primaryKey => $attributes[self::$primaryKey]
+            ])
+            ->delete();
+
+        return true;
     }
 }
