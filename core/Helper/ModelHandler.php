@@ -15,7 +15,7 @@ class ModelHandler
      */
     public static function generateEntity($data, $model)
     {
-        $className = 'Model\\' . $model;
+        $className = self::className($model);
 
         self::checkParameters($data, $className);
 
@@ -31,7 +31,7 @@ class ModelHandler
      */
     public static function generateEntities($data, $model)
     {
-        $className = 'Model\\' . $model;
+        $className = self::className($model);
 
         self::checkParameters($data, $className);
 
@@ -69,5 +69,19 @@ class ModelHandler
         {
             throw new Exception('Entity to generate: Model class does not exist.');
         }
+    }
+
+    /**
+     * Function to provide a model's name including namespace according to given model name
+     * @param string $modelName - a string containing the name of the Model
+     * @return string - name of the model including namespace
+     */
+    public static function className($modelName)
+    {
+        if (!is_string($modelName))
+        {
+            die('Model name must be a string');
+        }
+        return 'Model\\' . $modelName;
     }
 }

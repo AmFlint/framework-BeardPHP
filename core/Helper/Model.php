@@ -121,7 +121,7 @@ abstract class Model
     {
         $method = 'get' . ucfirst($name);
         if (method_exists($this, $method)) {
-            return $relationship = $this->$name = $this->$method();
+            return $this->$name = $this->$method();
         }
     }
 
@@ -146,7 +146,7 @@ abstract class Model
 
     protected function setRelationship($model, $joint)
     {
-        $this->checkRelationshipParams($modelClass = 'Model\\' . $model, $joint);
+        $this->checkRelationshipParams($modelClass = ModelHandler::className($model), $joint);
         $tableLeft = self::getTableName();
         $tableRight = $modelClass::getTableName();
         $tableLeftAttribute = key($joint);
@@ -226,7 +226,7 @@ abstract class Model
      */
     public static function create($attributes)
     {
-        $model = 'Model\\' . self::className();
+        $model = self::class;
         $entity = new $model($attributes);
         if ($entity->save())
         {
