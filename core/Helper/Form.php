@@ -4,9 +4,15 @@ namespace Helper;
 
 class Form extends Model
 {
+    public $email = 'lol';
+    public $masselot;
     public function rules()
     {
-        return [];
+        return [
+            ['masselot' => ['test']],
+            ['email' =>  ['testEmail', 'when' => true]],
+            ['email' => ['max:5', 'min:2']],
+        ];
     }
 
     public function messages()
@@ -16,14 +22,66 @@ class Form extends Model
 
     public function validate()
     {
-        $array = [
-            ['email' => 'test'],
-            ['email' => 'masselot']
-        ];
-        foreach ($array as $email)
+        $rules = $this->rules();
+        foreach ($rules as $rule)
         {
-            var_dump($email);
+            if (!is_string(key($rule)))
+            {
+                throw new \Exception('Attribute to validate must be a string');
+            }
+
+            $attribute = key($rule);
+            $currentRule = current($rule);
+
+            if (
+                empty($this->$attribute)
+                && !isset($currentRule['skipIfEmpty'])
+                ||
+                (isset($currentRule['skipIfEmpty'])
+                && $currentRule['skipIfEmpty'] === false)
+            )
+            {
+                continue;
+            }
+
+            // if conditional validation is used and condition is false go to the next rule
+            // if executing validation on unknown attribute, go to next validation rule
+            if (
+                isset($currentRule['when']) && !$currentRule['when']
+                || !property_exists($this, key($rule))
+            )
+            {
+                continue;
+            }
+            // unset condition for the next loop
+            unset($currentRule['when']);
+            // now looping on attribute's multiple validations
+            foreach ($currentRule as $method)
+            {
+                if (!is_string($method))
+                {
+                    throw new \Exception('Validation Rule must be a string.');
+                }
+                // if string possesses ':' (framework's native validation rules)
+                // used to pass a specific parameter to a method
+                if (strstr($method, ':'))
+                {
+                    $method = explode(':', $method);
+                    if (!method_exists($this, $method[0]))
+                    {
+                        throw new \Exception('Validation Method does not exist');
+                    }
+                    $methodName = $method[0];
+                    $validated = $this->$methodName($attribute, $method[1]);
+                    dump($validated);
+                }
+            }
         }
+    }
+
+    public function testEmail($attribute)
+    {
+        var_dump($this->$attribute);
     }
 
     /**
@@ -34,10 +92,11 @@ class Form extends Model
      */
     protected function min($attribute, $minimum)
     {
+        $formAttribute = $this->$attribute;
         if (
-            (is_numeric($attribute) && $attribute >= $minimum)
+            (is_numeric($formAttribute) && $formAttribute >= $minimum)
             ||
-            (is_string($attribute) && strlen($attribute) >= $minimum)
+            (is_string($formAttribute) && strlen($formAttribute) >= $minimum)
         )
         {
             return true;
@@ -53,10 +112,11 @@ class Form extends Model
      */
     protected function max($attribute, $maximum)
     {
+        $formAttribute = $this->$attribute;
         if (
-            (is_numeric($attribute) && $attribute <= $maximum)
+            (is_numeric($formAttribute) && $formAttribute <= $maximum)
             ||
-            (is_string($attribute) && strlen($attribute) <= $maximum)
+            (is_string($formAttribute) && strlen($formAttribute) <= $maximum)
         )
         {
             return true;
