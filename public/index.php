@@ -6,6 +6,7 @@ require '../vendor/autoload.php';
 
 $route = new \Helper\Router($_SERVER['REQUEST_URI']);
 $route::$url = trim($route::$url, '/');
+$route::$url = substr($route::$url, 0, strpos($route::$url, "?"));
 
 $route->init();
 
