@@ -10,7 +10,9 @@
   ],
   "require": {
     "php": ">=7.0",
-    "twig/twig": "^1.24"
+    "twig/twig": "^1.24",
+    "facebook/graph-sdk": "^5.6",
+    "symfony/var-dumper": "^3.3"
   },
   "autoload": {
     "psr-4": {
@@ -21,6 +23,7 @@
       "helpers\\": "helpers/"
     },
     "files": [
+      "functions/dd.php",
       "config.php"
     ]
   }
