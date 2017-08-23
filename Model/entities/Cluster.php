@@ -1,6 +1,6 @@
 <?php
 
-namespace Model;
+namespace Model\Entities;
 
 use Helper\Model;
 

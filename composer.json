@@ -19,7 +19,8 @@
       "Controller\\": "Controller/",
       "Helper\\": "core/Helper/",
       "routing\\": "core/routing/",
-      "Model\\": "Model/",
+      "Model\\Entities\\": "Model/entities",
+      "Model\\Forms\\": "Model/forms",
       "helpers\\": "helpers/"
     },
     "files": [
