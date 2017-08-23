@@ -109,7 +109,12 @@ abstract class Model
     public static function className()
     {
         $className = get_called_class();
-        return trim(substr($className, strpos($className, '\\') + 1));
+        // Remove all namespaces in class name
+        while (strpos($className, '\\'))
+        {
+            $className = trim(substr($className, strpos($className, '\\') + 1));
+        }
+        return $className;
     }
 
     /**

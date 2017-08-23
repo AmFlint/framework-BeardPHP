@@ -434,8 +434,7 @@ class QueryBuilder
         $export['query'] = $this->query;
         $export['values'] = $this->values;
         $export['parameters'] = $this->array_parameters;
-        var_dump($export);
-        die();
+        dd($export);
     }
 
     /**

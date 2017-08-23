@@ -82,6 +82,6 @@ class ModelHandler
         {
             die('Model name must be a string');
         }
-        return 'Model\\' . $modelName;
+        return 'Model\\Entities\\' . $modelName;
     }
 }
