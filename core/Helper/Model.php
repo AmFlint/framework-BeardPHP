@@ -151,6 +151,7 @@ abstract class Model
 
     protected function setRelationship($model, $joint)
     {
+        /** @var Model $modelClass*/
         $this->checkRelationshipParams($modelClass = ModelHandler::className($model), $joint);
         $tableLeft = self::getTableName();
         $tableRight = $modelClass::getTableName();
@@ -232,6 +233,7 @@ abstract class Model
     public static function create($attributes)
     {
         $model = self::class;
+        /** @var Model $entity */
         $entity = new $model($attributes);
         if ($entity->save())
         {

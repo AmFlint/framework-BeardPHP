@@ -381,3 +381,5 @@ __pycache__/
 
 !/Controller/
 !/core/Helper/
+!/Model/entities/User.php
+!/core/config/routing.json

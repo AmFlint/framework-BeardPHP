@@ -4,13 +4,14 @@ namespace Helper;
 
 class Form extends Model
 {
-    public $email = 'lol';
-    public $masselot;
+    protected $validated = true;
+    public $email = 'lolee';
+    public $age = '10';
     public function rules()
     {
         return [
-            ['masselot' => ['test']],
-            ['email' =>  ['testEmail', 'when' => true]],
+            ['age' => ['integer']],
+            ['email' =>  ['testEmail', 'when' => false]],
             ['email' => ['max:5', 'min:2']],
         ];
     }
@@ -20,6 +21,12 @@ class Form extends Model
         return [];
     }
 
+    /**
+     * Executes all the validation methods listed in method rules and stores success
+     * and error messages.
+     * @return bool
+     * @throws \Exception
+     */
     public function validate()
     {
         $rules = $this->rules();
@@ -71,17 +78,59 @@ class Form extends Model
                     {
                         throw new \Exception('Validation Method does not exist');
                     }
-                    $methodName = $method[0];
-                    $validated = $this->$methodName($attribute, $method[1]);
-                    dump($validated);
+                    $argument = $method[1];
+                    $method = $method[0];
+                    $validated = $this->$method($attribute, $argument);
                 }
+                else
+                {
+                    if (!method_exists($this, $method))
+                    {
+                        throw new \Exception('Validation method does not exist');
+                    }
+                    $validated = $this->$method($attribute);
+                }
+
+                if (!$validated && $this->validated)
+                {
+                    $this->setValidated(false);
+                }
+
+                $this->setMessage($attribute, $method, $validated);
             }
         }
+        // return validation state of the form so the controller manages treatment
+        return dd($this->isValidated());
+    }
+
+    public function integer($attribute)
+    {
+        return is_numeric($this->$attribute);
     }
 
     public function testEmail($attribute)
     {
-        var_dump($this->$attribute);
+        if ($this->$attribute === 'lol')
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isValidated()
+    {
+        return $this->validated;
+    }
+
+    /**
+     * @param bool $validated
+     */
+    public function setValidated($validated)
+    {
+        $this->validated = $validated;
     }
 
     /**
@@ -131,5 +180,10 @@ class Form extends Model
     protected function email($attribute)
     {
 
+    }
+
+    public function setMessage($attribute, $method, $validation)
+    {
+        //TODO Create Message Management class and treatment with (un)validated attributes
     }
 }
