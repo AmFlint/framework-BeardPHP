@@ -21,7 +21,8 @@
       "routing\\": "core/routing/",
       "Model\\Entities\\": "Model/entities",
       "Model\\Forms\\": "Model/forms",
-      "helpers\\": "helpers/"
+      "helpers\\": "helpers/",
+      "Exception\\": "core/Exception"
     },
     "files": [
       "functions/dd.php",
