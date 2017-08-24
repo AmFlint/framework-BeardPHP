@@ -10,6 +10,11 @@
     "controller": "Default",
     "action": "test"
   },
+  "signup": {
+    "path": "/signup",
+    "controller": "Default",
+    "action": "signup"
+  },
   "home": {
     "path": "/",
     "controller": "Default",
