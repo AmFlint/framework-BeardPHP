@@ -3,9 +3,13 @@
 namespace Helper;
 
 
+use Exception\FileNotExist;
+
 abstract class Controller
 {
+    const TEMPLATE_ENGINE = '.html.twig';
     protected $model;
+    /* @var \Twig_Environment self::$twig*/
     protected static $twig;
 
     public function __construct()
@@ -17,9 +21,7 @@ abstract class Controller
     {
         self::init();
         header('HTTP/1.0 404 Not Found');
-        echo self::$twig->render(
-            "404.html.twig"
-        );
+        self::render('errors/404');
     }
 
     public static function init()
@@ -29,5 +31,14 @@ abstract class Controller
             'cache' => false,
         ));
         self::$twig = $twig;
+    }
+
+    public static function render($name, $params = [])
+    {
+        $response = new Response();
+        return $response
+            ->buildViewFile($name)
+            ->setParams($params)
+            ->output();
     }
 }
