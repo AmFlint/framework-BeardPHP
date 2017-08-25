@@ -201,6 +201,11 @@ abstract class Model
         return ModelHandler::generateEntity(current($data), self::className());
     }
 
+    public static function exists($parameter)
+    {
+//        return self::findOne($parameter)
+    }
+
     /**
      * Init a 'Select' Query, if associative array is passed, 'where' clause will be
      * initialized with current key/value, else if a single value is passed, 'where'

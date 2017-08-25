@@ -20,3 +20,5 @@ define("APP_CORE_DIR", APP_ROOT_DIR . "/core");
 define('APP_VIEWS_DIR', APP_ROOT_DIR . "/views/");
 
 define("APP_ROUTE_DIR", APP_CORE_DIR . "/config");
+
+define('APP_PUBLIC_DIR', APP_ROOT_DIR . '/public/assets/');
