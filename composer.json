@@ -26,7 +26,8 @@
     },
     "files": [
       "functions/dd.php",
-      "config.php"
+      "config.php",
+      "functions/file_location.php"
     ]
   }
 }

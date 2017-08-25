@@ -38,6 +38,7 @@ CREATE TABLE `users` (
   `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lastname` int(100) NOT NULL,
   `birthday` date NOT NULL,
+  `facebookId` int(11) NOT NULL,
   `cluster_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
