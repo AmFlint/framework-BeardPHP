@@ -56,4 +56,13 @@ class Collection implements \Iterator
         }
         return $collectionArray;
     }
+
+    /**
+     * Get the number of items stored in the current Collection item
+     * @return int - number of items the Collection holds.
+     */
+    public function count()
+    {
+        return count($this->items);
+    }
 }
