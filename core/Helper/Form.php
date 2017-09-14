@@ -1,7 +1,11 @@
 <?php
 
 namespace Helper;
-
+/**
+ * A Model Representation in charge of validating User Inputs and managing error/success messages
+ * Class Form
+ * @package Helper
+ */
 class Form extends Model
 {
     protected $validated = true;
@@ -82,7 +86,7 @@ class Form extends Model
                     $method = $method[0];
                     $validated = $this->$method($attribute, $argument);
                 }
-                else
+                else // Calling for custom method
                 {
                     if (!method_exists($this, $method))
                     {
@@ -182,8 +186,21 @@ class Form extends Model
 
     }
 
+    /**
+     * Save an error Name/Message
+     * @param string $attribute - Attribute name
+     * @param string $method - Method Name
+     * @param bool - $validation - state of validation for current method on current attribute
+     */
     public function setMessage($attribute, $method, $validation)
     {
-        //TODO Create Message Management class and treatment with (un)validated attributes
+        $messages = $this->messages();
+        $key = "${attribute}.${method}";
+        // If message is set and the rule validation failed
+        // TODO : allow success messages
+        if (isset($messages[$key]) && !$validation)
+        {
+            Session::setError($key, $messages[$key]);
+        }
     }
 }
