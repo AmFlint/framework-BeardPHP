@@ -7,11 +7,19 @@ use Exception\FileNotExist;
 
 abstract class Controller
 {
+    /**
+     * @var string - template engine used for rendering views
+     */
     const TEMPLATE_ENGINE = '.html.twig';
-    protected $model;
-    /* @var \Twig_Environment self::$twig*/
+
+    /**
+     * @var \Twig_Environment self::$twig
+     */
     protected static $twig;
 
+    /**
+     * Controller constructor.
+     */
     public function __construct()
     {
         self::init();
@@ -24,6 +32,9 @@ abstract class Controller
         self::render('errors/404');
     }
 
+    /**
+     * Initialize and set up Twig Environment
+     */
     public static function init()
     {
         $loader = new \Twig_Loader_Filesystem(APP_VIEWS_DIR);
@@ -33,11 +44,15 @@ abstract class Controller
         self::$twig = $twig;
     }
 
+    /**
+     * Render a view file and pass parameters to be used into it.
+     * @param $name - name of the file to open (without template engine)
+     * @param array $params - parameters to be passed on to the view file under the form name => value
+     */
     public static function render($name, $params = [])
     {
         $response = new Response();
-        return $response
-            ->buildViewFile($name)
+        $response->buildViewFile($name)
             ->setParams($params)
             ->output();
     }

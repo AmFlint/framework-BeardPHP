@@ -4,8 +4,19 @@ namespace Helper;
 
 abstract class Model
 {
+    /**
+     * @var string - The entity's DB table name
+     */
     public static $tableName = null;
+
+    /**
+     * @var QueryBuilder|BeardQuery - The entity's QueryBuilder
+     */
     protected static $qb = null;
+
+    /**
+     * @var string - represents the DB table primary key linked to the Entity
+     */
     protected static $primaryKey = 'id';
 
     /**
@@ -20,7 +31,7 @@ abstract class Model
 
     /**
      * Hydrating Model's properties from given data if property exists
-     * @param array $attributes
+     * @param array $attributes - key => value to assign to current Entity
      */
     protected function hydrate($attributes)
     {
@@ -33,7 +44,7 @@ abstract class Model
 
     /**
      * Get Entity's attributes as associative array.
-     * @return array
+     * @return array - Current Entity's attributes
      */
     public function getAttributes()
     {
@@ -42,7 +53,7 @@ abstract class Model
 
     /**
      * Get an instance of BeardQueryBuilder associated with Model's table name
-     * @return QueryBuilder
+     * @return BeardQuery - Instance of Entity's specific QueryBuilder
      */
     public static function getQueryBuilder()
     {
@@ -53,6 +64,10 @@ abstract class Model
         return self::$qb = new BeardQuery($table);
     }
 
+    /**
+     * Method to get an instance of Framework's Native Query builder (different methods)
+     * @return QueryBuilder - Native Query Builder Object
+     */
     public static function getNativeQueryBuilder()
     {
         $table = self::getTableName();
@@ -86,8 +101,8 @@ abstract class Model
 
     /**
      * Method to convert a table name to a Model name according to the framework's conventions.
-     * @param string $table
-     * @return string
+     * @param string $table - Table name to convert
+     * @return string - Entity name without namespaces
      */
     public static function getEntityNameFromTable($table)
     {
@@ -104,7 +119,7 @@ abstract class Model
 
     /**
      * Return the name Model class without Namespace
-     * @return string
+     * @return string - current model's class name once namespaces are cleared
      */
     public static function className()
     {
@@ -131,9 +146,10 @@ abstract class Model
     }
 
     /**
-     * @param string $model
-     * @param array $joint
-     * @return Model
+     * Relationship creation method for a x to 1 relationship (x might be 1 or many)
+     * @param string $model - The model name to link via the relationship
+     * @param array $joint - key => value representing link between both DB tables
+     * @return Model - The Entity fetched via the relationship
      * @throws \Exception
      */
     public function hasOne($model, $joint)
@@ -144,6 +160,12 @@ abstract class Model
         return $model;
     }
 
+    /**
+     * Relationship creation method for a x to n relationship (x might be 1 or many)
+     * @param string $model - The model name to link via the relationship
+     * @param array $joint - key => value representing link between both DB tables
+     * @return Collection - collection of entities fetched.
+     */
     public function hasMany($model, $joint)
     {
         return $this->setRelationship($model, $joint)->get($model);
@@ -211,7 +233,7 @@ abstract class Model
      * initialized with current key/value, else if a single value is passed, 'where'
      * clause will target current Model's mainKey property with value passed.
      * @param bool|array|integer|string $parameter
-     * @return QueryBuilder
+     * @return QueryBuilder - instance of QB
      */
     public static function find($parameter = false)
     {
