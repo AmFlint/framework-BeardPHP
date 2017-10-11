@@ -54,6 +54,8 @@ class QueryBuilder
 
     public $joint;
 
+    public $joint_parameters;
+
     /**
      * QueryBuilder constructor.
      * @param $table
@@ -176,7 +178,20 @@ class QueryBuilder
     public function on(string $parameter1, string $parameter2)
     {
         $this->joint .= 'ON ' . $parameter1 . ' = ' . $parameter2;
+        $this->setJointParameterValue($parameter2);
         return $this;
+    }
+
+    protected function setJointParameterValue($value)
+    {
+        $table = $this->getTableNameFromValue($value);
+        $this->joint_parameters[$table] = $value;
+    }
+
+    protected function getTableNameFromValue($value)
+    {
+        $parameter = explode('.', $value);
+        return $parameter[0];
     }
 
     /**
@@ -289,7 +304,7 @@ class QueryBuilder
     protected function resetQuery()
     {
         $this->parameters = $this->columns = $this->query = $this->condition = $this->joint = $this->stmt = $this->limit = $this->offset = '';
-        $this->values = $this->array_parameters = array();
+        $this->values = $this->array_parameters = $this->joint_parameters = array();
     }
 
     /**
@@ -434,6 +449,7 @@ class QueryBuilder
         $export['query'] = $this->query;
         $export['values'] = $this->values;
         $export['parameters'] = $this->array_parameters;
+        $export['joint'] = $this->joint_parameters;
         dd($export);
     }
 

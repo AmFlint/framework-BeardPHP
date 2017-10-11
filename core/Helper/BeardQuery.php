@@ -29,4 +29,16 @@ class BeardQuery extends QueryBuilder
     {
         return parent::get();
     }
+
+    public function setRelationshipJoin($leftAttribute, $rightAttribute)
+    {
+        $table = $this->getTableNameFromValue($leftAttribute);
+        if (count($this->joint_parameters) > 0 && !isset($this->joint_parameters[$table]))
+        {
+            $leftAttr = explode('.', $leftAttribute);
+            $leftAttribute = key($this->joint_parameters) . ".{$leftAttr[1]}";
+        }
+
+        return $this->on($leftAttribute, $rightAttribute);
+    }
 }
