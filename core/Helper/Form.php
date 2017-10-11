@@ -104,9 +104,14 @@ class Form extends Model
             }
         }
         // return validation state of the form so the controller manages treatment
-        return dd($this->isValidated());
+        return $this->isValidated();
     }
 
+    /**
+     * Check if an attribute is an integer
+     * @param $attribute - form attribute to check
+     * @return bool - true if attribute is an integer, otherwise false
+     */
     public function integer($attribute)
     {
         return is_numeric($this->$attribute);
@@ -122,6 +127,7 @@ class Form extends Model
     }
 
     /**
+     * Getter for form's `validated` attribute
      * @return bool
      */
     public function isValidated()
@@ -130,6 +136,7 @@ class Form extends Model
     }
 
     /**
+     * Set the `validated` attribute for current Form
      * @param bool $validated
      */
     public function setValidated($validated)

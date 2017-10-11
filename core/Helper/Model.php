@@ -52,6 +52,18 @@ abstract class Model
     }
 
     /**
+     * Get current Model's properties name
+     * @return array - properties name of current Model
+     */
+    public static function getProperties()
+    {
+        $class = ModelHandler::className(self::className());
+        /* @var Model $model */
+        $model = new $class();
+        return array_keys($model->getAttributes());
+    }
+
+    /**
      * Get an instance of BeardQueryBuilder associated with Model's table name
      * @return BeardQuery - Instance of Entity's specific QueryBuilder
      */
@@ -179,14 +191,34 @@ abstract class Model
         $tableRight = $modelClass::getTableName();
         $tableLeftAttribute = key($joint);
         $tableRightAttribute = current($joint);
+        $conditionAttr = $tableLeftAttribute;
+        if (!isset($this->{$tableLeftAttribute}))
+        {
+            $conditionAttr = self::$primaryKey;
+        }
+
         $condition = [
-            "{$tableLeft}.{$tableLeftAttribute}" => $this->{$tableLeftAttribute} ?? 0
+            "{$tableLeft}.{$conditionAttr}" => $this->{$conditionAttr} ?? 0
         ];
+        $modelInstance = new $modelClass();
+        $this->setSelectClause($tableRight, $modelInstance->getProperties());
+
         return $this->getQueryBuilder()
-            ->select(['*'])
             ->join($tableRight, 'inner')
-            ->on("{$tableLeft}.{$tableLeftAttribute}", "{$tableRight}.{$tableRightAttribute}")
-            ->where($condition);
+            ->setRelationshipJoin("{$tableLeft}.{$tableLeftAttribute}", "{$tableRight}.{$tableRightAttribute}")
+            ->where($condition)
+            ;
+    }
+
+    protected function setSelectClause($table, $properties)
+    {
+        $select = [];
+        foreach ($properties as $property)
+        {
+            $select[] = "{$table}.{$property}";
+        }
+        $this->getQueryBuilder()
+        ->select($select);
     }
 
     protected function checkRelationshipParams($model, $joint)
@@ -340,5 +372,21 @@ abstract class Model
             ->delete();
 
         return true;
+    }
+
+    public function viaTable($table, $joint)
+    {
+        /** @var Model $modelClass*/
+//        $this->checkRelationshipParams($modelClass = $table, $joint);
+        $tableLeft = self::getTableName();
+        $tableRight = $table;
+        $tableLeftAttribute = key($joint);
+        $tableRightAttribute = current($joint);
+        self::getQueryBuilder()
+            ->select(['*'])
+            ->join($tableRight, 'inner')
+            ->on("{$tableLeft}.{$tableLeftAttribute}", "{$tableRight}.{$tableRightAttribute}");
+
+        return $this;
     }
 }
