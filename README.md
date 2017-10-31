@@ -216,7 +216,7 @@ Application routing takes place in file core/config/routing.json
 Every single route takes the following format :
 ```json
 {
-    "home": { // name of the route
+    "home": {
         "path": "/",
         "controller": "Home",
         "method": "GET",
