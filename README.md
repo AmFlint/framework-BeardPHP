@@ -116,7 +116,7 @@ Update method returns a boolean so you can decide different behaviors whether en
   $user->save();
   ```
   
-#### Delete Data
+### Delete Data
 ```php
 // For this example, $user is an instance of User, persisted in DataBase
 $user->delete(); // returns boolean 
@@ -171,7 +171,7 @@ foreach ($orders as $order) {
 
 ***Note*** that for Many-to-many (n to n) relationships, a method 'viaTable' is available, described in next topic.
 
-#### Specify pivot tables
+#### Specify pivot tables (method `viaTable`)
 
 ```php
 class User extends Model {
@@ -183,8 +183,80 @@ class User extends Model {
 }
 ```
 
-***
+### QueryBuilder
  
-#### QueryBuilder
- 
-#### Collection
+### Collection
+
+The Collection class holds the data row resulting from Database call. The row items held in Collection are formatted to objects of the corresponding Model Class before being added to the Collection Object.
+
+Iterator and ArrayAccess interfaces are being implemented inside the Collection, which allow developers to loop on the Collection's items as if it was a simple array of data, still allowing them to call for its useful formatting functions.
+```php
+// in this example, $orders is a Collection of Order objects retrieved from Database
+foreach ($orders as $order) {
+  // Instructions 
+}
+
+$order = current($orders); // get current item from Collection
+```
+
+Collection has also access to different treatment methods for data rows:
+```php
+// in this example, $orders is a Collection of Order objects retrieved from Database
+$ordersArray = $orders->asArray(); // returns an array of arrays instead of array of objects
+
+$numberOfOrders = $orders->count(); // count returns the number of objects held in the Collection
+```
+
+### Validating Inputs (Form Model)
+
+### Routing
+
+Application routing takes place in file core/config/routing.json
+
+Every single route takes the following format :
+```json
+{
+    "home": { // name of the route
+        "path": "/", // path
+        "controller": "Home", // note that framework will suffix controller name with 'Controller', here => 'HomeController'
+        "method": "GET", // method being called for given route
+        "action": "Hello" // action name, note that the framework will suffix action name with 'Action', here => 'HelloAction'
+    }
+}
+```
+
+Your Controller names must be suffixed by 'Controller' and action names suffixed by 'Action'.
+
+***Note*** that you can also pass/expect parameters in route path and retrieve them in your Controller Actions like following :
+- In route:
+```json
+{
+    "home": {
+        "path": "/users/:user_id/orders/:order_id", 
+        "controller": "Order",
+        "method": "GET",
+        "action": "view"
+    }
+}
+```
+
+- In Controller:
+
+```php
+class OrderController extends Controller {
+    public function viewAction($user_id, $order_id) {
+        // some instructions
+    }
+}
+```
+
+### Rendering a view
+
+The template view engine for BeardPHP is Twig, and the controller's way to render views is pretty similar to Twig.
+Every Controllers extending the base Controller has access to a method `render` accepting two parameters: 
+  - (string) path to view from views directory 
+  - (array) parameters to pass to the view template
+  
+```php
+$this->render('auth/login', ['username' => 'toto']);
+```
