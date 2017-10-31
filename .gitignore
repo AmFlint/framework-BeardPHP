@@ -383,3 +383,4 @@ __pycache__/
 !/core/Helper/
 !/Model/entities/User.php
 !/core/config/routing.json
+!/core/Exception/
