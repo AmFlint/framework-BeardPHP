@@ -217,13 +217,18 @@ Every single route takes the following format :
 ```json
 {
     "home": { // name of the route
-        "path": "/", // path
-        "controller": "Home", // note that framework will suffix controller name with 'Controller', here => 'HomeController'
-        "method": "GET", // method being called for given route
-        "action": "Hello" // action name, note that the framework will suffix action name with 'Action', here => 'HelloAction'
+        "path": "/",
+        "controller": "Home",
+        "method": "GET",
+        "action": "Hello"
     }
 }
 ```
+
+- "home" (arbitrary): (string) name of the route
+- "path": (string) URL path for the action
+- "controller": (string) Controller name, ***note*** that framework will suffix controller name with 'Controller', here => 'HomeController'
+- "action": (string) ***note*** that the framework will suffix action name with 'Action', here => 'HelloAction'
 
 Your Controller names must be suffixed by 'Controller' and action names suffixed by 'Action'.
 
