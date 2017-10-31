@@ -7,12 +7,12 @@ I created this mini framework to test my abilities after the end of my first yea
 At the time I started to work on this project (~April/May 2017), I had poor notions of Dependency Injection with containers, this is the reason why I did not use this pattern here.
 
 ## What's in this repository ?
-### Basic ORM :
+## Basic ORM :
 BeardPHP comes with a built-in ORM going from simple Model Entities Read methods to richer relationships between entities (it even allows you to specify pivot tables), allowing developpers to customise their database structure and don't fall into a framework specific structure.
 
 In order for the BeardORM to work properly, you will need to specify the Entity's Primary (default to `id`), used for many operations (find/findOne, relationships ...).
  
-#### Example for Model Declaration 
+### Example for Model Declaration 
 ```php
 // Example : User Entity declaration with primary key 'user_id'
 class User extends Model {
@@ -25,8 +25,8 @@ class User extends Model {
 }
 ```
 
-#### ORM Operations
-##### Retrieve Model data from Database :
+## ORM Operations
+### Retrieve Model data from Database :
 via method find() : 
 ```php
 // below instructions return an instance of class Collection holding an instance of User Class.
@@ -56,7 +56,7 @@ To retrieve all Entities responding to given condition, use method `findAll` :
  // to specify other conditions, use method andWhere or orWhere (example above)
  ```
  
-##### Persist Data
+### Persist Data
 
 In order to persist data in database from a Model's properties, I offer you a global method to do it easily : `save`
 ```php
@@ -67,7 +67,7 @@ $user->save();
 
 See next topics `Create ` and `Update` to get more details about method `save`.
 
-###### Create
+### Create
 
 In order to persist data in database from a Model's properties, I offer you two ways to do it :
 ***Note*** that the properties will only be assigned to your Model (when hydrating in Model's `create` method or at Object Instanciation) if you declared it properly in class Declaration (see Class Declaration example above). Non declared attributes will just be ignored.
@@ -98,7 +98,7 @@ $user = User::create($data);
  $user->save(); // persist data to DB
  ```
  
-###### Update
+### Update
 
 In order to persist data in database from a Model's properties, I offer you two ways to do it :
   
@@ -116,10 +116,71 @@ Update method returns a boolean so you can decide different behaviors whether en
   $user->save();
   ```
   
-##### Delete Data
+#### Delete Data
 ```php
 // For this example, $user is an instance of User, persisted in DataBase
 $user->delete(); // returns boolean 
+```
+
+### RelationShips
+
+In BeardPHP, relations are available to developers, you can create a relationship between two entities via methods `hasOne` et `hasMany` described below :
+
+#### hasOne
+```php
+// In this example, the class User holds a property 'address_id' referencing to an Address Model.
+class User extends Model {
+  public function getAddress() {
+    return $this->hasOne('Address', ['address_id' => 'id']);
+  }
+}
+```
+Using `hasOne` method grants you access to a User's property `address` and contains an instance of Address Class.
+
+```php
+// this examples uses class declaration with relationships described in above example
+$address = $user->address;
+// you can now use all properties and methods bound to this Address instance
+$address->street;
+$address->postal_code;
+$address->getFullAddress();
+```
+
+#### hasMany
+
+```php
+class User extends Model {
+  // In this example, the class Order holds a property 'user_id' referencing to a User Model.
+  public function getOrders() {
+    return $this->hasMany('Order', ['id' => 'user_id']);
+  }
+}
+```
+***Note*** that calling an entity through a `hasMany` relationship, the returned value is an instance of Collection holding instances of the related Model.
+
+```php
+// this examples uses class declaration with relationships described in above example
+$orders = $user->orders;
+// you can now use all properties and methods bound to these Order instances through the Collection
+foreach ($orders as $order) {
+  // instructions
+  $order->id;
+  $order->price;
+}
+```
+
+***Note*** that for Many-to-many (n to n) relationships, a method 'viaTable' is available, described in next topic.
+
+#### Specify pivot tables
+
+```php
+class User extends Model {
+  public function getPictures() {
+    return $this
+    ->viaTable('user_pictures', ['id' => 'user_id']) // referencing user's id to a key user_id in table user_pictures
+    ->hasMany('Picture', ['picture_id' => 'id']); // key picture_id in table user_pictures references the id in Picture entity
+  }
+}
 ```
 
 ***
