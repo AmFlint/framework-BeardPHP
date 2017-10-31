@@ -206,8 +206,7 @@ abstract class Model
         return $this->getQueryBuilder()
             ->join($tableRight, 'inner')
             ->setRelationshipJoin("{$tableLeft}.{$tableLeftAttribute}", "{$tableRight}.{$tableRightAttribute}")
-            ->where($condition)
-            ;
+            ->where($condition);
     }
 
     protected function setSelectClause($table, $properties)
@@ -255,6 +254,11 @@ abstract class Model
         return ModelHandler::generateEntity(current($data), self::className());
     }
 
+    public static function findAll($parameters)
+    {
+        
+    }
+
     public static function exists($parameter)
     {
 //        return self::findOne($parameter)
@@ -273,11 +277,11 @@ abstract class Model
 
         if (is_array($parameter))
         {
-            $qb->where(key($parameter), current($parameter));
+            $qb->where($parameter);
         }
         else if ($parameter)
         {
-            $qb->where(self::$primaryKey, $parameter);
+            $qb->where([self::$primaryKey => $parameter]);
         }
 
         return $qb;

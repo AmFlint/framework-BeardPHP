@@ -5,7 +5,7 @@ namespace Helper;
 
 use Exception;
 
-class Collection implements \Iterator
+class Collection implements \Iterator, \ArrayAccess
 {
     public $items = [];
 
@@ -64,5 +64,25 @@ class Collection implements \Iterator
     public function count()
     {
         return count($this->items);
+    }
+
+    public function offsetSet($offset, $value) {
+        if (is_null($offset)) {
+            $this->items[] = $value;
+        } else {
+            $this->items[$offset] = $value;
+        }
+    }
+
+    public function offsetExists($offset) {
+        return isset($this->items[$offset]);
+    }
+
+    public function offsetUnset($offset) {
+        unset($this->items[$offset]);
+    }
+
+    public function offsetGet($offset) {
+        return isset($this->items[$offset]) ? $this->items[$offset] : null;
     }
 }
