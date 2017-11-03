@@ -327,7 +327,6 @@ abstract class Model
      */
     public function save()
     {
-        $this->users;
         $attributes = $this->getAttributes();
 //        unset($attributes[self::$primaryKey]);
         $qb = $this->getQueryBuilder();

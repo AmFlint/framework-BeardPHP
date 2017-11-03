@@ -58,21 +58,21 @@ class QueryBuilder
 
     /**
      * QueryBuilder constructor.
-     * @param $table
+     * @param string $tableName - table name to bind to QB instance.
      * Assigns DB table to the builder object
      */
     public function __construct($tableName)
     {
         $this->db = DB::get();
         $this->resetQuery();
-        $this->setTable($tableName);
+        $this->table($tableName);
     }
 
     /**
      * @param string $table
      * Used to set the table we are going to work on
      */
-    public function setTable(string $table)
+    public function table(string $table)
     {
         $this->table = $table;
     }
@@ -135,7 +135,7 @@ class QueryBuilder
         if (is_array(current($condition)))
         {
             $values = current($condition);
-            $operator = 'IN';
+            $operator = $operator == '=' | 'IN' ? 'IN' : 'NOT IN';
             $to_bind = " ('{$values[0]}'";
             for ($i = 1; $i < count($values); $i++)
             {
@@ -166,6 +166,45 @@ class QueryBuilder
         }
         $this->joint .= ' ' . strtoupper($type) . ' JOIN ' . $table . ' ';
         return $this;
+    }
+
+    /**
+     * Joining two tables with Left Join
+     * @param string $table - name of the table to join
+     * @param String[] $on - associative array for table joint
+     * of form ["table1.parameter" => "table2.parameter"]
+     * @return QueryBuilder $this - instance of QueryBuilder
+     */
+    public function leftJoin($table, $on)
+    {
+        return $this->join($table, 'LEFT')
+        ->on(key($on), current($on));
+    }
+
+    /**
+     * Joining with "Right join" between two tables
+     * @param string $table - name of the table to join
+     * @param String[] $on - associative array for table joint
+     * of form ["table1.parameter" => "table2.parameter"]
+     * @return QueryBuilder $this - instance of QueryBuilder
+     */
+    public function rightJoin($table, $on)
+    {
+        return $this->join($table, 'RIGHT')
+            ->on(key($on), current($on));
+    }
+
+    /**
+     * Joining with "Right join" between two tables
+     * @param string $table - name of the table to join
+     * @param String[] $on - associative array for table joint
+     * of form ["table1.parameter" => "table2.parameter"]
+     * @return QueryBuilder $this - instance of QueryBuilder
+     */
+    public function innerJoin($table, $on)
+    {
+        return $this->join($table, 'INNER')
+            ->on(key($on), current($on));
     }
 
     /**
@@ -254,6 +293,7 @@ class QueryBuilder
 
     /**
      * @param array $array_param
+     * @return QueryBuilder
      */
     public function updateColumns(array $array_param)
     {
@@ -352,7 +392,7 @@ class QueryBuilder
     }
 
     /**
-     * @return mixed
+     * @return array - data retrieved from DB or empty array.
      */
     public function getAll()
     {
@@ -364,17 +404,12 @@ class QueryBuilder
     }
 
     /**
-     * @return mixed
+     * @return array - data retrieved from DB or empty array.
      */
     public function getFirst()
     {
         $this->condition = "";
-        $this->limit = " LIMIT 1";
-        $this->setQuery();
-        $this->stmt = $this->db->prepare($this->query);
-        $this->bind();
-        $row = $this->resultSet();
-        return $row;
+        return $this->getOne();
     }
 
     public function getOne()
@@ -388,7 +423,7 @@ class QueryBuilder
     }
 
     /**
-     * @return mixed
+     * @return array - data retrieved from database, or empty array.
      */
     public function get()
     {
